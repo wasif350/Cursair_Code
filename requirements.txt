@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+anthropic
+python-multipart
+streamlit
+websockets
