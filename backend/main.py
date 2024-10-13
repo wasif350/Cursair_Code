@@ -1,145 +1,8 @@
-# from fastapi import FastAPI, WebSocket, HTTPException
-# from pydantic import BaseModel
-# from anthropic import AsyncAnthropic
-# import uvicorn
-# import subprocess
-# from typing import List
-# from fastapi.middleware.cors import CORSMiddleware
-
-# app = FastAPI()
-
-# # Add CORS middleware to allow requests from any origin (Can specify if necessary)
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],  # Update this list with the frontend URL if necessary
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-# # Configure Anthropic API key
-# client = AsyncAnthropic(
-#     api_key=
-#     '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'
-# )
-
-
-# # Request Schemas
-# class CodeRequest(BaseModel):
-#     prompt: str
-#     language: str
-
-
-# class CodeOptimizeRequest(BaseModel):
-#     code: str
-
-
-# class CodeExplainRequest(BaseModel):
-#     code: str
-
-
-# class CodeDebugRequest(BaseModel):
-#     code: str
-
-
-# class CodeTestRequest(BaseModel):
-#     code: str
-
-
-# class ProjectSummaryRequest(BaseModel):
-#     activities: List[str]
-
-
-# # Helper function to generate Claude response
-# async def get_claude_response(prompt: str):
-#     try:
-#         response = await client.completions.create(
-#             model="claude-3-sonnet-20240229",
-#             prompt=prompt,
-#             max_tokens_to_sample=1024)
-#         return response.completion
-#     except Exception as e:
-#         print("An error occurred while generating the response.")
-#         print(f"Error details: {str(e)}")
-#         return f"Error generating response: {str(e)}"
-
-
-# # Add a root endpoint
-# @app.get("/")
-# async def read_root():
-#     return {"message": "Welcome to the AI Code Assistant API!"}
-
-
-# # Endpoints for code generation, optimization, explanation, debugging, etc.
-# @app.post("/generate_code/")
-# async def generate_code(request: CodeRequest):
-#     print(f"Received request: {request}")
-#     prompt = f"Write {request.language} code for the following prompt: {request.prompt}"
-#     return {"code": await get_claude_response(prompt)}
-
-
-# @app.post("/optimize_code/")
-# async def optimize_code(request: CodeOptimizeRequest):
-#     prompt = f"Optimize the following code for readability and performance:\n{request.code}"
-#     return {"optimized_code": await get_claude_response(prompt)}
-
-
-# @app.post("/explain_code/")
-# async def explain_code(request: CodeExplainRequest):
-#     prompt = f"Explain the following code in simple terms:\n{request.code}"
-#     return {"explanation": await get_claude_response(prompt)}
-
-
-# @app.post("/debug_code/")
-# async def debug_code(request: CodeDebugRequest):
-#     try:
-#         with open("temp_debug_code.py", "w") as file:
-#             file.write(request.code)
-#         result = subprocess.run(["python", "temp_debug_code.py"],
-#                                 capture_output=True,
-#                                 text=True)
-#         return {"output": result.stdout, "error": result.stderr}
-#     except Exception as e:
-#         print(f"Error debugging code: {str(e)}")
-#         raise HTTPException(status_code=500, detail=str(e))
-
-
-# @app.post("/generate_unit_tests/")
-# async def generate_unit_tests(request: CodeTestRequest):
-#     prompt = f"Write unit tests for the following code:\n{request.code}"
-#     return {"unit_tests": await get_claude_response(prompt)}
-
-
-# @app.post("/project_summary/")
-# async def project_summary(request: ProjectSummaryRequest):
-#     activities_summary = "\n".join(request.activities)
-#     prompt = f"Provide a project summary for the following activities:\n{activities_summary}"
-#     return {"summary": await get_claude_response(prompt)}
-
-
-# # WebSocket for real-time collaboration
-# @app.websocket("/ws/{session_id}")
-# async def websocket_endpoint(websocket: WebSocket, session_id: str):
-#     await websocket.accept()
-#     try:
-#         while True:
-#             data = await websocket.receive_text()
-#             await websocket.send_text(f"Message received: {data}")
-#     except Exception as e:
-#         print(f"Error with WebSocket communication: {str(e)}")
-#         await websocket.close()
-
-
-# # Run the backend server
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-
 from fastapi import FastAPI, WebSocket, HTTPException, WebSocketDisconnect
 from pydantic import BaseModel
 import google.generativeai as genai
 import asyncio
+import os
 import uvicorn
 from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
@@ -155,7 +18,8 @@ app.add_middleware(
 )
 
 # Configure Gemini API
-genai.configure(api_key='AIzaSyAnfEvhg0Uz6Oahgvyoyy1FLGIWKzd6LhI')
+gemini_api = os.environ['GEMINI_API_KEY']
+genai.configure(api_key=gemini_api)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 # Request Schemas
