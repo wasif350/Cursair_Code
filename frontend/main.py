@@ -4,8 +4,9 @@ import asyncio
 import websockets
 
 # Update this URL to match the backend's URL and port
-BASE_URL = "http://localhost:8000"
-WS_URL = "ws://localhost:8000/ws"
+BASE_URL = "https://af6ccaaf-6921-4850-91d7-0d98af7748b4-00-2l7zztr4ienub.riker.replit.dev:8000/"
+
+WS_URL = "ws://af6ccaaf-6921-4850-91d7-0d98af7748b4-00-2l7zztr4ienub.riker.replit.dev:8000/ws"
 
 # Streamlit App
 st.title('Enhanced Code Editor')
@@ -46,51 +47,52 @@ if st.button("Explain Code"):
         st.write(result.get("explanation", ""))
 
 # Collaboration
-st.header("Code Collaboration")
-session_id = st.text_input("Enter Collaboration Session ID")
-collab_input = st.text_input("Enter message to collaborate")
+# st.header("Code Collaboration")
+# session_id = st.text_input("Enter Collaboration Session ID")
+# collab_input = st.text_input("Enter message to collaborate")
 
-# A place to display received collaboration messages
-if 'received_messages' not in st.session_state:
-    st.session_state.received_messages = []
+# # A place to display received collaboration messages
+# if 'received_messages' not in st.session_state:
+#     st.session_state.received_messages = []
 
-async def connect_and_receive(session_id):
-    """Function to receive messages from the WebSocket."""
-    uri = f"{WS_URL}/{session_id}"
-    try:
-        async with websockets.connect(uri) as websocket:
-            while True:
-                response = await websocket.recv()
-                st.session_state.received_messages.append(response)  # Store received messages
-                st.experimental_rerun()  # Refresh the app to show new messages
-    except Exception as e:
-        st.error(f"Error receiving messages: {e}")
+# async def connect_and_receive(session_id):
+#     """Function to receive messages from the WebSocket."""
+#     uri = f"{WS_URL}/{session_id}"
+#     try:
+#         async with websockets.connect(uri) as websocket:
+#             while True:
+#                 response = await websocket.recv()
+#                 st.session_state.received_messages.append(response)  # Store received messages
+#                 st.experimental_rerun()  # Refresh the app to show new messages
+#     except Exception as e:
+#         st.error(f"Error receiving messages: {e}")
 
-async def send_ws_message(session_id, collab_input):
-    """Function to send messages through WebSocket."""
-    uri = f"{WS_URL}/{session_id}"
-    try:
-        async with websockets.connect(uri) as websocket:
-            await websocket.send(collab_input)
-            st.success(f"Message sent: {collab_input}")
-    except Exception as e:
-        st.error(f"Error sending collaboration message: {e}")
+# async def send_ws_message(session_id, collab_input):
+#     """Function to send messages through WebSocket."""
+#     uri = f"{WS_URL}/{session_id}"
+#     try:
+#         async with websockets.connect(uri) as websocket:
+#             await websocket.send(collab_input)
+#             st.success(f"Message sent: {collab_inp
+#                                 ut}")
+#     except Exception as e:
+#         st.error(f"Error sending collaboration message: {e}")
 
-# Start receiving messages when the user joins the collaboration
-if session_id and st.button("Join Collaboration"):
-    asyncio.run(connect_and_receive(session_id))
+# # Start receiving messages when the user joins the collaboration
+# if session_id and st.button("Join Collaboration"):
+#     asyncio.run(connect_and_receive(session_id))
 
-if st.button("Send Collaboration Message"):
-    if session_id and collab_input:
-        asyncio.run(send_ws_message(session_id, collab_input))
-    else:
-        st.warning("Please enter a session ID and message.")
+# if st.button("Send Collaboration Message"):
+#     if session_id and collab_input:
+#         asyncio.run(send_ws_message(session_id, collab_input))
+#     else:
+#         st.warning("Please enter a session ID and message.")
 
-# Display received messages
-if st.session_state.received_messages:
-    st.subheader("Received Collaboration Messages:")
-    for message in st.session_state.received_messages:
-        st.write(message)
+# # Display received messages
+# if st.session_state.received_messages:
+#     st.subheader("Received Collaboration Messages:")
+#     for message in st.session_state.received_messages:
+#         st.write(message)
 
 # Debug Assistant
 st.header("Debug Assistant")
